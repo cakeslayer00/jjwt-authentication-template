@@ -1,5 +1,4 @@
 #!/bin/bash
-mkdir -p secrets/backend
 
 # Generate PKCS#8 private key directly
 openssl genpkey -algorithm RSA -out src/main/resources/private_key.pem -pkeyopt rsa_keygen_bits:2048
