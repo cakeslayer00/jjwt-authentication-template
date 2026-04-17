@@ -4,21 +4,28 @@ WORKDIR /app
 
 COPY gradlew .
 COPY gradle gradle
+COPY build.gradle .
 COPY settings.gradle .
-COPY services/backend/build.gradle services/backend/build.gradle
 
-RUN ./gradlew :services:backend:dependencies --no-daemon
+RUN --mount=type=cache,target=/root/.gradle/caches ./gradlew dependencies --no-daemon
 
-COPY services/backend/src services/backend/src
+COPY src src
 
-RUN ./gradlew :services:backend:bootJar --no-daemon -x test
+RUN --mount=type=cache,target=/root/.gradle/caches ./gradlew bootJar --no-daemon -x test
 
-FROM eclipse-temurin:25-jdk-alpine
+FROM eclipse-temurin:25-jre-alpine
+
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 
 WORKDIR /app
 
-COPY --from=builder /app/services/backend/build/libs/*.jar app.jar
+COPY --from=builder --chown=appuser:appgroup /app/build/libs/*.jar app.jar
+
+USER appuser
 
 EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD wget -qO- http://localhost:8080/actuator/health || exit 1
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
