@@ -1,0 +1,37 @@
+scheduler:
+  revoked-token-cleanup:
+    cron: '0 15 10 15 * ?'
+  expired-token-cleanup:
+    cron: '0 15 10 15 * ?'
+
+jwt:
+  private-key: classpath:private_key.pem
+  public-key: classpath:public_key.pem
+  expiration: 900000
+  refresh-expiration-seconds: 2592000
+  refresh-grace-period-seconds: 30
+  issuer: me
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
+
+spring:
+  application:
+    name: backend
+
+  config:
+    import: optional:file:.env[.properties]
+
+  datasource:
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    url: jdbc:postgresql://db:5432/${POSTGRES_DB}
+    driver-class-name: org.postgresql.Driver
+
+  liquibase:
+    enabled: true
