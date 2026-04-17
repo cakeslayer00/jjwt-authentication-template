@@ -2,7 +2,7 @@
 
 ## Run Locally
 
-1. Create a .env file from .env.example, and write down your values
+1. Create a `.env` file from `.env.example`, and write down your values
 2. Run `setup.sh` script in bash terminal to generate private/public keys
 
    `./setup.sh`
